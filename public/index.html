@@ -3,47 +3,267 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>RAG App — Voyage + Pinecone + Gemini</title>
+<title>Pragyan — Exam & Interview Prep Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>RAG Knowledge Assistant</h1>
-      <p class="sub">Voyage AI embeddings · Pinecone vector search · Gemini generation</p>
-    </header>
 
-    <section class="card">
-      <h2>1. Add knowledge</h2>
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="text-tab">Paste text</button>
-        <button class="tab-btn" data-tab="file-tab">Upload file</button>
+<div class="app-shell">
+
+  <!-- ============ NAV RAIL ============ -->
+  <nav class="nav-rail">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="18" stroke="#B8862E" stroke-width="1.4" opacity="0.55"/>
+        <circle cx="20" cy="20" r="13" stroke="#B8862E" stroke-width="1.4" opacity="0.75"/>
+        <circle cx="20" cy="20" r="8" stroke="#B8862E" stroke-width="1.6"/>
+        <circle cx="20" cy="20" r="2.6" fill="#B8862E"/>
+      </svg>
+      <div>
+        <div class="brand-word">Pragyan</div>
+        <span class="brand-tag">Prep Command Center</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Overview</div>
+      <button class="nav-link active" data-view="dashboard">
+        <svg class="icon" viewBox="0 0 20 20" fill="none"><path d="M3 10.5 10 4l7 6.5M5 9v7h10V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-link" data-view="subjects">
+        <svg class="icon" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="11" y="4" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="12" width="6" height="4" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="11" y="12" width="6" height="4" rx="1.2" stroke="currentColor" stroke-width="1.6"/></svg>
+        Subjects
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Study</div>
+      <button class="nav-link" data-view="study">
+        <svg class="icon" viewBox="0 0 20 20" fill="none"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H14a2 2 0 0 1 2 2v8.5l-2.8-2H5.5A1.5 1.5 0 0 1 4 11V5.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Ask &amp; Retrieve
+      </button>
+      <button class="nav-link" data-view="quiz">
+        <svg class="icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 13v.01M10 6.5a2 2 0 1 1 1.6 3.2c-.6.5-1.1.9-1.1 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Quiz Mode
+        <span class="badge-soon">Soon</span>
+      </button>
+      <button class="nav-link" data-view="flashcards">
+        <svg class="icon" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="4.5" width="11" height="8" rx="1.3" stroke="currentColor" stroke-width="1.6"/><path d="M6 16h11a1 1 0 0 0 1-1V7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Flashcards
+        <span class="badge-soon">Soon</span>
+      </button>
+      <button class="nav-link" data-view="interview">
+        <svg class="icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M4 16c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Mock Interview
+        <span class="badge-soon">Soon</span>
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Track</div>
+      <button class="nav-link" data-view="progress">
+        <svg class="icon" viewBox="0 0 20 20" fill="none"><path d="M4 15V9M10 15V5M16 15v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Progress
+        <span class="badge-soon">Soon</span>
+      </button>
+    </div>
+
+    <div class="nav-footer">
+      pragyan · gemini + local vector store<br/>
+      <span id="healthDot" style="color:#6E7392">● checking API…</span>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- ---------------- DASHBOARD ---------------- -->
+    <section class="view active" id="view-dashboard">
+      <div class="view-header">
+        <div>
+          <p class="view-eyebrow">Command center</p>
+          <h1 class="view-title">Good to see you back.</h1>
+          <p class="view-sub">A single grounded knowledge base for every exam and interview you're preparing for.</p>
+        </div>
+        <button class="btn btn-brass" id="dashNewSubjectBtn">+ New subject</button>
       </div>
 
-      <div id="text-tab" class="tab-panel active">
-        <textarea id="textInput" placeholder="Paste any text, notes, or documentation here..."></textarea>
-        <input id="textSource" type="text" placeholder="Source label (optional, e.g. 'HR policy doc')" />
-        <button id="ingestTextBtn">Ingest text</button>
+      <div class="stat-grid">
+        <div class="card stat-card">
+          <div class="ring-wrap" style="width:52px;height:52px;">
+            <svg width="52" height="52"><circle class="ring-track" cx="26" cy="26" r="21" stroke-width="5"/></svg>
+          </div>
+          <div>
+            <div class="num" id="statSubjects">0</div>
+            <div class="lbl">Subjects</div>
+          </div>
+        </div>
+        <div class="card stat-card">
+          <div class="ring-wrap" style="width:52px;height:52px;">
+            <svg width="52" height="52"><circle class="ring-track" cx="26" cy="26" r="21" stroke-width="5"/></svg>
+          </div>
+          <div>
+            <div class="num" id="statDocs">0</div>
+            <div class="lbl">Documents ingested</div>
+          </div>
+        </div>
+        <div class="card stat-card">
+          <div class="ring-wrap" style="width:52px;height:52px;">
+            <svg width="52" height="52"><circle class="ring-track" cx="26" cy="26" r="21" stroke-width="5"/></svg>
+          </div>
+          <div>
+            <div class="num" id="statChunks">0</div>
+            <div class="lbl">Chunks indexed</div>
+          </div>
+        </div>
       </div>
 
-      <div id="file-tab" class="tab-panel">
-        <input id="fileInput" type="file" accept=".txt,.md,.csv,.pdf" />
-        <button id="ingestFileBtn">Upload &amp; ingest</button>
-      </div>
-
-      <div id="ingestStatus" class="status"></div>
+      <h2 style="font-family:var(--font-display); font-size:16px; margin:0 0 14px;">Your subjects</h2>
+      <div class="subject-grid" id="dashSubjectGrid"></div>
     </section>
 
-    <section class="card">
-      <h2>2. Ask a question</h2>
-      <div id="chatLog" class="chat-log"></div>
-      <div class="ask-row">
-        <input id="questionInput" type="text" placeholder="Ask something about your ingested content..." />
-        <button id="askBtn">Ask</button>
+    <!-- ---------------- SUBJECTS ---------------- -->
+    <section class="view" id="view-subjects">
+      <div class="view-header">
+        <div>
+          <p class="view-eyebrow">Organize</p>
+          <h1 class="view-title">Subjects</h1>
+          <p class="view-sub">Keep GATE, C-CAT, ISTQB and SDET interview material in separate, cleanly scoped knowledge bases.</p>
+        </div>
+        <button class="btn btn-brass" id="subjectsNewBtn">+ New subject</button>
+      </div>
+      <div class="subject-grid" id="subjectsGrid"></div>
+    </section>
+
+    <!-- ---------------- STUDY / CHAT ---------------- -->
+    <section class="view" id="view-study">
+      <div class="view-header">
+        <div>
+          <p class="view-eyebrow">Ask &amp; retrieve</p>
+          <h1 class="view-title" id="studySubjectTitle">Ask &amp; Retrieve</h1>
+          <p class="view-sub">Answers are grounded only in what you've ingested for this subject, with sources cited inline.</p>
+        </div>
+        <select class="input" id="studySubjectSelect" style="width:220px;"></select>
+      </div>
+
+      <div class="study-layout">
+        <div class="card chat-panel">
+          <div class="chat-log" id="chatLog"></div>
+          <div class="chat-input-row">
+            <input class="input" id="chatInput" type="text" placeholder="Ask something grounded in your uploaded material…" />
+            <button class="btn btn-primary" id="chatSendBtn">Ask</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="card sources-panel" style="margin-bottom:16px;">
+            <h3>Sources</h3>
+            <div id="sourcesList"><p style="color:var(--text-muted); font-size:12.5px;">Ask a question to see cited sources here.</p></div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-family:var(--font-display); font-size:13.5px; margin:0 0 12px;">Add knowledge</h3>
+            <div class="field-label">Paste text</div>
+            <textarea class="textarea" id="ingestTextInput" placeholder="Paste notes, syllabus, or reference text…" style="min-height:70px;"></textarea>
+            <input class="input" id="ingestSourceLabel" type="text" placeholder="Label (e.g. 'TOC notes ch.3')" style="margin-top:8px;" />
+            <button class="btn btn-ghost btn-sm" id="ingestTextBtn" style="margin-top:8px; width:100%; justify-content:center;">Ingest text</button>
+
+            <div style="border-top:1px solid var(--paper-line); margin:14px 0;"></div>
+
+            <div class="field-label">Upload file</div>
+            <input class="input" id="ingestFileInput" type="file" accept=".txt,.md,.csv,.pdf" />
+            <button class="btn btn-ghost btn-sm" id="ingestFileBtn" style="margin-top:8px; width:100%; justify-content:center;">Upload &amp; ingest</button>
+
+            <div class="doc-list" id="docList"></div>
+          </div>
+        </div>
       </div>
     </section>
-  </div>
 
-  <script src="/app.js"></script>
+    <!-- ---------------- COMING SOON VIEWS ---------------- -->
+    <section class="view" id="view-quiz">
+      <div class="view-header">
+        <div>
+          <p class="view-eyebrow">Test yourself</p>
+          <h1 class="view-title">Quiz Mode</h1>
+        </div>
+      </div>
+      <div class="soon-hero">
+        <div class="ring-wrap" style="width:64px;height:64px;">
+          <svg width="64" height="64"><circle class="ring-track" cx="32" cy="32" r="26" stroke-width="6"/><circle class="ring-value" cx="32" cy="32" r="26" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="115"/></svg>
+        </div>
+        <h2>Auto-generated quizzes are next</h2>
+        <p>Gemini will pull questions straight from your ingested subject material, scored with the same +3/&minus;1 format you're already practicing for C&#8209;CAT.</p>
+        <div class="soon-feature-list">
+          <div class="soon-feature"><b>Structured MCQs</b>Generated from your own documents, not generic question banks</div>
+          <div class="soon-feature"><b>+3/&minus;1 scoring</b>Matches your real exam format</div>
+          <div class="soon-feature"><b>Instant review</b>Explanations tied back to source chunks</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-flashcards">
+      <div class="view-header">
+        <div><p class="view-eyebrow">Retain</p><h1 class="view-title">Flashcards</h1></div>
+      </div>
+      <div class="soon-hero">
+        <div class="ring-wrap" style="width:64px;height:64px;">
+          <svg width="64" height="64"><circle class="ring-track" cx="32" cy="32" r="26" stroke-width="6"/><circle class="ring-value" cx="32" cy="32" r="26" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="140"/></svg>
+        </div>
+        <h2>Spaced repetition, built on SM-2</h2>
+        <p>Cards generated from your material, scheduled with the same active-recall approach you already use in Anki.</p>
+        <div class="soon-feature-list">
+          <div class="soon-feature"><b>Auto-generated cards</b>Pulled from subject documents</div>
+          <div class="soon-feature"><b>SM-2 scheduling</b>Again / Hard / Good / Easy</div>
+          <div class="soon-feature"><b>Daily due queue</b>Shown right on the dashboard</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-interview">
+      <div class="view-header">
+        <div><p class="view-eyebrow">Rehearse</p><h1 class="view-title">Mock Interview</h1></div>
+      </div>
+      <div class="soon-hero">
+        <div class="ring-wrap" style="width:64px;height:64px;">
+          <svg width="64" height="64"><circle class="ring-track" cx="32" cy="32" r="26" stroke-width="6"/><circle class="ring-value" cx="32" cy="32" r="26" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="150"/></svg>
+        </div>
+        <h2>Upload a JD, get asked real questions</h2>
+        <p>Technical and behavioral questions drawn from an uploaded job description or question bank, with feedback after each answer.</p>
+        <div class="soon-feature-list">
+          <div class="soon-feature"><b>One question at a time</b>Realistic pacing, no dumping</div>
+          <div class="soon-feature"><b>Structured feedback</b>Compared against ideal answer shape</div>
+          <div class="soon-feature"><b>JD-aware</b>Upload the actual role you're prepping for</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-progress">
+      <div class="view-header">
+        <div><p class="view-eyebrow">Track</p><h1 class="view-title">Progress</h1></div>
+      </div>
+      <div class="soon-hero">
+        <div class="ring-wrap" style="width:64px;height:64px;">
+          <svg width="64" height="64"><circle class="ring-track" cx="32" cy="32" r="26" stroke-width="6"/><circle class="ring-value" cx="32" cy="32" r="26" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="90"/></svg>
+        </div>
+        <h2>One ring, every subject</h2>
+        <p>Quiz accuracy, flashcard mastery, and weak-topic tracking rolled into the same ring language used across Pragyan.</p>
+        <div class="soon-feature-list">
+          <div class="soon-feature"><b>Weak-area ranking</b>Surfaces what needs work first</div>
+          <div class="soon-feature"><b>Accuracy over time</b>Per subject, per topic</div>
+          <div class="soon-feature"><b>Streaks</b>Daily review consistency</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="/app.js"></script>
 </body>
 </html>

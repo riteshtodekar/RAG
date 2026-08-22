@@ -3,14 +3,14 @@ import { answerQuestion } from '../src/ragService.js';
 
 const router = Router();
 
-// POST /api/chat  { question, topK?, history? }
+// POST /api/chat  { question, topK?, history?, subjectId? }
 router.post('/', async (req, res) => {
   try {
-    const { question, topK, history } = req.body || {};
+    const { question, topK, history, subjectId } = req.body || {};
     if (!question || typeof question !== 'string' || !question.trim()) {
       return res.status(400).json({ error: 'Field "question" is required and must be a non-empty string.' });
     }
-    const result = await answerQuestion(question, { topK, history });
+    const result = await answerQuestion(question, { topK, history, subjectId });
     res.json({ success: true, ...result });
   } catch (err) {
     console.error('[chat] error:', err);

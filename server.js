@@ -7,6 +7,7 @@ import { rateLimit } from 'express-rate-limit';
 import { config } from './src/config.js';
 import ingestRoutes from './routes/ingest.js';
 import chatRoutes from './routes/chat.js';
+import subjectRoutes from './routes/subjects.js';
 import { getIndexStats } from './src/vectorstore.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -54,6 +55,7 @@ app.get('/api/stats', async (req, res) => {
 
 app.use('/api/ingest', ingestRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/subjects', subjectRoutes);
 
 // --- Static frontend (simple test UI) ---
 app.use(express.static(path.join(__dirname, 'public')));

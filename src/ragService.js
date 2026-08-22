@@ -44,7 +44,7 @@ export async function ingestText(text, metadata = {}) {
 export async function answerQuestion(question, opts = {}) {
   const topK = opts.topK || config.rag.topK;
   const queryEmbedding = await embedQuery(question);
-  const matches = await queryVectors(queryEmbedding, topK);
+  const matches = await queryVectors(queryEmbedding, topK, opts.subjectId);
 
   const contextChunks = matches.map((m) => ({
     text: m.metadata?.text || '',

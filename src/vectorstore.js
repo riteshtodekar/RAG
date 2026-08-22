@@ -72,10 +72,12 @@ export async function upsertVectors(vectors) {
  * Find the topK most similar vectors by cosine similarity.
  * @param {number[]} vector - query embedding
  * @param {number} topK
+ * @param {string} [subjectId] - if set, only search chunks tagged with this subject
  */
-export async function queryVectors(vector, topK = config.rag.topK) {
+export async function queryVectors(vector, topK = config.rag.topK, subjectId) {
   const all = await loadAll();
-  const scored = all.map((r) => ({
+  const pool = subjectId ? all.filter((r) => r.metadata?.subjectId === subjectId) : all;
+  const scored = pool.map((r) => ({
     id: r.id,
     score: cosineSimilarity(vector, r.values),
     metadata: r.metadata,
