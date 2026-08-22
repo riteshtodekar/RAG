@@ -1,0 +1,62 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Deploy: push this repo to GitHub, then in Render click
+# New -> Blueprint, pick the repo, and Render reads this file
+# automatically. You only need to fill in GEMINI_API_KEY (and
+# optionally APP_API_KEY) in the Render dashboard after that --
+# every other setting is pre-filled below.
+#
+# Free tier notes: this runs on Render's free web service plan
+# (no card required). Free services spin down after ~15 minutes
+# of inactivity and take 30-50s to wake back up on the next
+# request -- fine for testing/personal use, not for low-latency
+# production traffic. Bump `plan` to `starter` or higher to
+# remove that sleep behavior.
+#
+# Storage note: the vector store is a local JSON file on disk.
+# Render's free plan filesystem is ephemeral, so ingested data
+# resets on redeploy/restart -- just re-ingest afterward. This
+# is fine for a demo/project; a persistent disk (paid) or a real
+# vector database would be the fix for anything long-running.
+
+services:
+  - type: web
+    name: rag-app
+    runtime: node
+    plan: free
+    region: oregon # change to the region closest to you/your users
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: APP_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_TEMPERATURE
+        value: "0.3"
+      - key: GEMINI_MAX_OUTPUT_TOKENS
+        value: "1024"
+      - key: EMBEDDING_MODEL
+        value: gemini-embedding-001
+      - key: EMBEDDING_DIMENSION
+        value: "768"
+      - key: VECTOR_STORE_PATH
+        value: ./data/vectorstore.json
+      - key: CHUNK_SIZE
+        value: "1000"
+      - key: CHUNK_OVERLAP
+        value: "150"
+      - key: TOP_K
+        value: "5"
+      - key: MAX_UPLOAD_MB
+        value: "15"
