@@ -8,6 +8,9 @@ import { config } from './src/config.js';
 import ingestRoutes from './routes/ingest.js';
 import chatRoutes from './routes/chat.js';
 import subjectRoutes from './routes/subjects.js';
+import quizRoutes from './routes/quiz.js';
+import flashcardRoutes from './routes/flashcards.js';
+import interviewRoutes from './routes/interview.js';
 import { getIndexStats } from './src/vectorstore.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -56,6 +59,9 @@ app.get('/api/stats', async (req, res) => {
 app.use('/api/ingest', ingestRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/subjects', subjectRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/flashcards', flashcardRoutes);
+app.use('/api/interview', interviewRoutes);
 
 // --- Static frontend (simple test UI) ---
 app.use(express.static(path.join(__dirname, 'public')));

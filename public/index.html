@@ -48,12 +48,10 @@
       <button class="nav-link" data-view="quiz">
         <svg class="icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M10 13v.01M10 6.5a2 2 0 1 1 1.6 3.2c-.6.5-1.1.9-1.1 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         Quiz Mode
-        <span class="badge-soon">Soon</span>
       </button>
       <button class="nav-link" data-view="flashcards">
         <svg class="icon" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="4.5" width="11" height="8" rx="1.3" stroke="currentColor" stroke-width="1.6"/><path d="M6 16h11a1 1 0 0 0 1-1V7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         Flashcards
-        <span class="badge-soon">Soon</span>
       </button>
       <button class="nav-link" data-view="interview">
         <svg class="icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M4 16c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -189,56 +187,129 @@
         <div>
           <p class="view-eyebrow">Test yourself</p>
           <h1 class="view-title">Quiz Mode</h1>
+          <p class="view-sub">Auto-generated from your ingested material, scored +3 / &minus;1 / 0 — the same format as C&#8209;CAT.</p>
+        </div>
+        <select class="input" id="quizSubjectSelect" style="width:220px;"></select>
+      </div>
+
+      <!-- Setup -->
+      <div class="card" id="quizSetup">
+        <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap;">
+          <div>
+            <div class="field-label">Number of questions</div>
+            <select class="input" id="quizCount" style="width:120px;">
+              <option value="5">5</option>
+              <option value="8" selected>8</option>
+              <option value="12">12</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label">Difficulty</div>
+            <select class="input" id="quizDifficulty" style="width:150px;">
+              <option value="mixed" selected>Mixed</option>
+              <option value="easy">Easy</option>
+              <option value="moderate">Moderate</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <button class="btn btn-brass" id="quizGenerateBtn">Generate quiz</button>
+        </div>
+        <p style="color:var(--text-muted); font-size:12.5px; margin:14px 0 0;">Questions are generated fresh each time from your subject's ingested documents — the more you've added, the better the coverage.</p>
+      </div>
+
+      <!-- Active quiz -->
+      <div id="quizActive" style="display:none;">
+        <div class="card" style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="pill pill-brass" id="quizProgressPill">Question 1 / 8</span>
+          <span class="pill" id="quizScorePill">Score so far: 0</span>
+        </div>
+        <div class="card">
+          <h3 id="quizQuestionText" style="font-family:var(--font-display); font-size:17px; margin:0 0 18px;"></h3>
+          <div id="quizOptions" style="display:flex; flex-direction:column; gap:10px;"></div>
+          <button class="btn btn-primary" id="quizNextBtn" style="margin-top:20px;" disabled>Submit answer</button>
         </div>
       </div>
-      <div class="soon-hero">
-        <div class="ring-wrap" style="width:64px;height:64px;">
-          <svg width="64" height="64"><circle class="ring-track" cx="32" cy="32" r="26" stroke-width="6"/><circle class="ring-value" cx="32" cy="32" r="26" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="115"/></svg>
-        </div>
-        <h2>Auto-generated quizzes are next</h2>
-        <p>Gemini will pull questions straight from your ingested subject material, scored with the same +3/&minus;1 format you're already practicing for C&#8209;CAT.</p>
-        <div class="soon-feature-list">
-          <div class="soon-feature"><b>Structured MCQs</b>Generated from your own documents, not generic question banks</div>
-          <div class="soon-feature"><b>+3/&minus;1 scoring</b>Matches your real exam format</div>
-          <div class="soon-feature"><b>Instant review</b>Explanations tied back to source chunks</div>
-        </div>
-      </div>
+
+      <!-- Review -->
+      <div id="quizReview" style="display:none;"></div>
     </section>
 
     <section class="view" id="view-flashcards">
       <div class="view-header">
-        <div><p class="view-eyebrow">Retain</p><h1 class="view-title">Flashcards</h1></div>
-      </div>
-      <div class="soon-hero">
-        <div class="ring-wrap" style="width:64px;height:64px;">
-          <svg width="64" height="64"><circle class="ring-track" cx="32" cy="32" r="26" stroke-width="6"/><circle class="ring-value" cx="32" cy="32" r="26" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="140"/></svg>
+        <div>
+          <p class="view-eyebrow">Retain</p>
+          <h1 class="view-title">Flashcards</h1>
+          <p class="view-sub">Spaced repetition on the SM-2 algorithm — the same active-recall approach as Anki.</p>
         </div>
-        <h2>Spaced repetition, built on SM-2</h2>
-        <p>Cards generated from your material, scheduled with the same active-recall approach you already use in Anki.</p>
-        <div class="soon-feature-list">
-          <div class="soon-feature"><b>Auto-generated cards</b>Pulled from subject documents</div>
-          <div class="soon-feature"><b>SM-2 scheduling</b>Again / Hard / Good / Easy</div>
-          <div class="soon-feature"><b>Daily due queue</b>Shown right on the dashboard</div>
+        <select class="input" id="fcSubjectSelect" style="width:220px;"></select>
+      </div>
+
+      <div class="card" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span class="pill pill-sage" id="fcDueCount">0 due today</span>
+          <span class="pill" id="fcTotalCount">0 total cards</span>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <select class="input" id="fcGenCount" style="width:100px;">
+            <option value="8">8 cards</option>
+            <option value="10" selected>10 cards</option>
+            <option value="15">15 cards</option>
+          </select>
+          <button class="btn btn-brass" id="fcGenerateBtn">Generate cards</button>
         </div>
       </div>
+
+      <div id="fcReviewArea"></div>
     </section>
 
     <section class="view" id="view-interview">
       <div class="view-header">
-        <div><p class="view-eyebrow">Rehearse</p><h1 class="view-title">Mock Interview</h1></div>
-      </div>
-      <div class="soon-hero">
-        <div class="ring-wrap" style="width:64px;height:64px;">
-          <svg width="64" height="64"><circle class="ring-track" cx="32" cy="32" r="26" stroke-width="6"/><circle class="ring-value" cx="32" cy="32" r="26" stroke-width="6" stroke-dasharray="163" stroke-dashoffset="150"/></svg>
-        </div>
-        <h2>Upload a JD, get asked real questions</h2>
-        <p>Technical and behavioral questions drawn from an uploaded job description or question bank, with feedback after each answer.</p>
-        <div class="soon-feature-list">
-          <div class="soon-feature"><b>One question at a time</b>Realistic pacing, no dumping</div>
-          <div class="soon-feature"><b>Structured feedback</b>Compared against ideal answer shape</div>
-          <div class="soon-feature"><b>JD-aware</b>Upload the actual role you're prepping for</div>
+        <div>
+          <p class="view-eyebrow">Rehearse</p>
+          <h1 class="view-title">Mock Interview</h1>
+          <p class="view-sub">One question at a time, with direct feedback after each answer — technical and behavioral.</p>
         </div>
       </div>
+
+      <!-- Setup -->
+      <div class="card" id="ivSetup">
+        <div class="field-label">Base it on a subject (optional)</div>
+        <select class="input" id="ivSubjectSelect" style="margin-bottom:12px;"></select>
+        <div class="field-label">Or paste a job description (optional — combine with a subject, or use alone)</div>
+        <textarea class="textarea" id="ivJdText" placeholder="Paste the JD you're prepping for…" style="min-height:90px;"></textarea>
+        <div style="display:flex; gap:14px; align-items:flex-end; margin-top:12px; flex-wrap:wrap;">
+          <div>
+            <div class="field-label">Number of questions</div>
+            <select class="input" id="ivCount" style="width:120px;">
+              <option value="4">4</option>
+              <option value="6" selected>6</option>
+              <option value="8">8</option>
+            </select>
+          </div>
+          <button class="btn btn-brass" id="ivStartBtn">Start interview</button>
+        </div>
+      </div>
+
+      <!-- Active session -->
+      <div id="ivActive" style="display:none;">
+        <div class="card" style="margin-bottom:14px;">
+          <span class="pill pill-brass" id="ivProgressPill">Question 1 / 6</span>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <span class="pill" id="ivQTypePill" style="margin-bottom:10px;"></span>
+          <h3 id="ivQuestionText" style="font-family:var(--font-display); font-size:17px; margin:0;"></h3>
+        </div>
+        <div class="card">
+          <div class="field-label">Your answer</div>
+          <textarea class="textarea" id="ivAnswerText" placeholder="Answer as you would out loud…" style="min-height:120px;"></textarea>
+          <button class="btn btn-primary" id="ivSubmitBtn" style="margin-top:12px;">Submit answer</button>
+        </div>
+        <div id="ivFeedbackCard"></div>
+      </div>
+
+      <!-- Complete -->
+      <div id="ivComplete" style="display:none;"></div>
     </section>
 
     <section class="view" id="view-progress">

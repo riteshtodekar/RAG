@@ -69,6 +69,27 @@ export async function upsertVectors(vectors) {
 }
 
 /**
+ * Sample up to `limit` chunks belonging to a subject, spread across its
+ * documents rather than ranked by similarity. Used for generating quizzes,
+ * flashcards, and interview questions that should cover the material broadly.
+ * @param {string} subjectId
+ * @param {number} limit
+ */
+export async function sampleChunksForSubject(subjectId, limit = 12) {
+  const all = await loadAll();
+  const pool = subjectId ? all.filter((r) => r.metadata?.subjectId === subjectId) : all;
+  if (pool.length <= limit) return pool;
+  // Evenly spaced sample across the pool so long documents aren't
+  // over-represented by whichever chunks happen to sort first.
+  const step = pool.length / limit;
+  const sampled = [];
+  for (let i = 0; i < limit; i++) {
+    sampled.push(pool[Math.floor(i * step)]);
+  }
+  return sampled;
+}
+
+/**
  * Find the topK most similar vectors by cosine similarity.
  * @param {number[]} vector - query embedding
  * @param {number} topK

@@ -49,3 +49,32 @@ export async function generateAnswer(question, contextChunks, history = []) {
 
   return response.text;
 }
+
+/**
+ * Ask Gemini to return structured JSON matching a given schema.
+ * Used by quiz generation, flashcard generation, and mock interview flows.
+ * @param {string} prompt - full instruction, including any context block
+ * @param {object} schema - a Gemini responseSchema object (JSON Schema subset)
+ * @param {string} [systemInstruction]
+ */
+export async function generateStructured(prompt, schema, systemInstruction) {
+  const ai = getClient();
+  const response = await ai.models.generateContent({
+    model: config.gemini.model,
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: {
+      systemInstruction,
+      temperature: config.gemini.temperature,
+      maxOutputTokens: config.gemini.maxOutputTokens,
+      responseMimeType: 'application/json',
+      responseSchema: schema,
+    },
+  });
+
+  const raw = response.text;
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    throw new Error(`Model did not return valid JSON: ${err.message}`);
+  }
+}

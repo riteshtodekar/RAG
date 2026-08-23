@@ -7,3 +7,7 @@ uploads-tmp/
 data/vectorstore.json
 data/subjects.json
 data/documents.json
+data/quizzes.json
+data/quiz-attempts.json
+data/flashcards.json
+data/interviews.json
