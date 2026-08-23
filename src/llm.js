@@ -37,7 +37,7 @@ export async function generateAnswer(question, contextChunks, history = []) {
   ];
 
   const ai = getClient();
-  const response = await ai.models.generateContent({
+  const response = await callWithRetry(() => ai.models.generateContent({
     model: config.gemini.model,
     contents,
     config: {
@@ -45,9 +45,31 @@ export async function generateAnswer(question, contextChunks, history = []) {
       temperature: config.gemini.temperature,
       maxOutputTokens: config.gemini.maxOutputTokens,
     },
-  });
+  }));
 
   return response.text;
+}
+
+const RETRYABLE_STATUS = new Set([429, 503]);
+
+async function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+async function callWithRetry(fn, { retries = 3, baseDelayMs = 1000 } = {}) {
+  let lastErr;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const status = err?.status || err?.code || (err?.message?.match(/"code":\s*(\d+)/) || [])[1];
+      const isRetryable = RETRYABLE_STATUS.has(Number(status)) || /RESOURCE_EXHAUSTED|UNAVAILABLE|overloaded/i.test(err?.message || '');
+      if (!isRetryable || attempt === retries) throw err;
+      const delay = baseDelayMs * 2 ** attempt + Math.random() * 300;
+      console.warn(`[llm] transient error (attempt ${attempt + 1}/${retries + 1}), retrying in ${Math.round(delay)}ms:`, err.message);
+      await sleep(delay);
+    }
+  }
+  throw lastErr;
 }
 
 /**
@@ -56,25 +78,33 @@ export async function generateAnswer(question, contextChunks, history = []) {
  * @param {string} prompt - full instruction, including any context block
  * @param {object} schema - a Gemini responseSchema object (JSON Schema subset)
  * @param {string} [systemInstruction]
+ * @param {{maxOutputTokens?: number}} [opts]
  */
-export async function generateStructured(prompt, schema, systemInstruction) {
+export async function generateStructured(prompt, schema, systemInstruction, opts = {}) {
   const ai = getClient();
-  const response = await ai.models.generateContent({
+
+  const response = await callWithRetry(() => ai.models.generateContent({
     model: config.gemini.model,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: {
       systemInstruction,
       temperature: config.gemini.temperature,
-      maxOutputTokens: config.gemini.maxOutputTokens,
+      maxOutputTokens: opts.maxOutputTokens || config.gemini.maxOutputTokens,
       responseMimeType: 'application/json',
       responseSchema: schema,
     },
-  });
+  }));
 
   const raw = response.text;
   try {
     return JSON.parse(raw);
   } catch (err) {
+    // Truncated JSON (hit maxOutputTokens) surfaces here as an unterminated
+    // string/object. Give a clearer error than the raw parser message.
+    const looksTruncated = raw && !raw.trim().endsWith('}') && !raw.trim().endsWith(']');
+    if (looksTruncated) {
+      throw new Error('The model response was cut off before completing (likely too many items requested at once). Try a smaller count.');
+    }
     throw new Error(`Model did not return valid JSON: ${err.message}`);
   }
 }

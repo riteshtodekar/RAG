@@ -58,7 +58,7 @@ export async function startInterview({ subjectId, jdText, numQuestions = 6 }) {
   }
 
   const prompt = `${contextBlock}\n\nGenerate exactly ${numQuestions} interview questions (mix of technical and behavioral) based on the above.`;
-  const result = await generateStructured(prompt, QUESTIONS_SCHEMA, QUESTION_GEN_SYSTEM);
+  const result = await generateStructured(prompt, QUESTIONS_SCHEMA, QUESTION_GEN_SYSTEM, { maxOutputTokens: Math.max(1536, numQuestions * 150) });
 
   const session = {
     id: uuidv4(),

@@ -35,7 +35,7 @@ export async function generateFlashcards({ subjectId, count = 10 }) {
   const contextBlock = chunks.map((c, i) => `[${i + 1}] ${c.metadata?.text || ''}`).join('\n\n');
   const prompt = `Study material:\n${contextBlock}\n\nGenerate exactly ${count} flashcards grounded only in the material above.`;
 
-  const result = await generateStructured(prompt, CARDS_SCHEMA, SYSTEM);
+  const result = await generateStructured(prompt, CARDS_SCHEMA, SYSTEM, { maxOutputTokens: Math.max(1536, count * 140) });
   const now = new Date().toISOString();
   const cards = result.cards.slice(0, count).map((c) => ({
     id: uuidv4(),

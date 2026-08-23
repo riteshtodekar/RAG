@@ -41,7 +41,7 @@ export async function generateQuiz({ subjectId, count = 8, difficulty = 'mixed' 
   const prompt = `Study material:\n${contextBlock}\n\nGenerate exactly ${count} multiple-choice questions ` +
     `at ${difficulty} difficulty, grounded only in the material above.`;
 
-  const result = await generateStructured(prompt, QUIZ_SCHEMA, SYSTEM);
+  const result = await generateStructured(prompt, QUIZ_SCHEMA, SYSTEM, { maxOutputTokens: Math.max(2048, count * 220) });
   const quiz = {
     id: uuidv4(),
     subjectId,
